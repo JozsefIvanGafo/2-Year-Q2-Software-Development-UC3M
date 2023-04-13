@@ -21,62 +21,62 @@ class OrderManager:
         # RETURN TRUE IF THE EAN13 IS RIGHT, OR FALSE IN OTHER CASE
         checksum = 0
         code_read = -1
-        res = False
+        is_valid = False
         regex_ean13 = re.compile("^[0-9]{13}$")
         valid_ean13_format = regex_ean13.fullmatch(ean13)
         if valid_ean13_format is None:
             raise OrderManagementException("Invalid EAN13 code string")
 
-        for i, digit in enumerate(reversed(ean13)):
+        for position, digit in enumerate(reversed(ean13)):
             try:
                 current_digit = int(digit)
             except ValueError as v_e:
                 raise OrderManagementException("Invalid EAN13 code string") from v_e
-            if i == 0:
+            if position == 0:
                 code_read = current_digit
             else:
-                checksum += (current_digit) * 3 if (i % 2 != 0) else current_digit
+                checksum += (current_digit) * 3 if (position % 2 != 0) else current_digit
         control_digit = (10 - (checksum % 10)) % 10
 
         if (code_read != -1) and (code_read == control_digit):
-            res = True
+            is_valid = True
         else:
             raise OrderManagementException("Invalid EAN13 control digit")
-        return res
+        return is_valid
 
     @staticmethod
-    def validate_tracking_code( t_c ):
+    def validate_tracking_code(tracking_code):
         """Method for validating sha256 values"""
         myregex = re.compile(r"[0-9a-fA-F]{64}$")
-        res = myregex.fullmatch(t_c)
+        res = myregex.fullmatch(tracking_code)
         if not res:
             raise OrderManagementException("tracking_code format is not valid")
 
     @staticmethod
-    def save_store( data ):
+    def save_order(order):
         """Medthod for saving the orders store"""
-        file_store = JSON_FILES_PATH + "orders_store.json"
+        orders_store = JSON_FILES_PATH + "orders_store.json"
         #first read the file
         try:
-            with open(file_store, "r", encoding="utf-8", newline="") as file:
-                data_list = json.load(file)
+            with open(orders_store, "r", encoding="utf-8", newline="") as file:
+                order_list = json.load(file)
         except FileNotFoundError:
             # file is not found , so  init my data_list
-            data_list = []
+            order_list = []
         except json.JSONDecodeError as ex:
             raise OrderManagementException("JSON Decode Error - Wrong JSON Format") from ex
 
         found = False
-        for item in data_list:
-            if item["_OrderRequest__order_id"] == data.order_id:
+        for item in order_list:
+            if item["_OrderRequest__order_id"] == order.order_id:
                 found = True
         if found is False:
-            data_list.append(data.__dict__)
+            order_list.append(order.__dict__)
         else:
             raise OrderManagementException("order_id is already registered in orders_store")
         try:
-            with open(file_store, "w", encoding="utf-8", newline="") as file:
-                json.dump(data_list, file, indent=2)
+            with open(orders_store, "w", encoding="utf-8", newline="") as file:
+                json.dump(order_list, file, indent=2)
         except FileNotFoundError as ex:
             raise OrderManagementException("Wrong file or file path") from ex
         return True
@@ -98,6 +98,7 @@ class OrderManager:
         # first read the file
         try:
             with open(shimpents_store_file, "r", encoding="utf-8", newline="") as file:
+                #change misterious name to shipping_list
                 data_list = json.load(file)
         except FileNotFoundError:
             # file is not found , so  init my data_list
@@ -123,25 +124,6 @@ class OrderManager:
                         zip_code ):
         """Register the orders into the order's file"""
 
-        myregex = re.compile(r"(Regular|Premium)")
-        res = myregex.fullmatch(order_type)
-        if not res:
-            raise OrderManagementException ("order_type is not valid")
-
-        myregex = re.compile(r"^(?=^.{20,100}$)(([a-zA-Z0-9]+\s)+[a-zA-Z0-9]+)$")
-        res = myregex.fullmatch(address)
-        if not res:
-            raise OrderManagementException ("address is not valid")
-
-        myregex = re.compile(r"^(\+)[0-9]{11}")
-        res = myregex.fullmatch(phone_number)
-        if not res:
-            raise OrderManagementException ("phone number is not valid")
-        if zip_code.isnumeric() and len(zip_code) == 5:
-            if (int(zip_code) > 52999 or int(zip_code) < 1000):
-                raise OrderManagementException("zip_code is not valid")
-        else:
-            raise OrderManagementException("zip_code format is not valid")
         if self.validate_ean13(product_id):
             my_order = OrderRequest(product_id,
                                     order_type,
@@ -149,9 +131,11 @@ class OrderManager:
                                     phone_number,
                                     zip_code)
 
-        self.save_store(my_order)
+        self.save_order(my_order)
 
         return my_order.order_id
+
+
 
     #pylint: disable=too-many-locals
     def send_product ( self, input_file ):
