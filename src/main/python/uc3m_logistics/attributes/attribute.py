@@ -8,8 +8,8 @@ class Attribute():
 
     def _validate(self,value):
         myregex = re.compile(self._validation_pattern)
-        res = myregex.fullmatch(value)
-        if not res:
+        match = myregex.fullmatch(value)
+        if not match:
             raise OrderManagementException(self._error_message)
         return value
 

@@ -79,14 +79,3 @@ class OrderRequest:
     @zip_code.setter
     def zip_code(self, value):
         self.__product_id = ZipCode(value).value
-
-    """def validate_zip_code(self, zip_code):
-        if zip_code.isnumeric() and len(zip_code) == 5:
-            if (int(zip_code) > 52999 or int(zip_code) < 1000):
-                raise OrderManagementException("zip_code is not valid")
-        else:
-            raise OrderManagementException("zip_code format is not valid")
-        return zip_code"""
-
-
-

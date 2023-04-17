@@ -19,8 +19,8 @@ class ProductId(Attribute):
         for position, digit in enumerate(reversed(attr_value)):
             try:
                 current_digit = int(digit)
-            except ValueError as v_e:
-                raise OrderManagementException("Invalid EAN13 code string") from v_e
+            except ValueError as my_error:
+                raise OrderManagementException("Invalid EAN13 code string") from my_error
             if position == 0:
                 code_read = current_digit
             else:
