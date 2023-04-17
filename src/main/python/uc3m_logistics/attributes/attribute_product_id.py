@@ -1,7 +1,7 @@
 from .attribute import Attribute
 from ..order_management_exception import OrderManagementException
 import re
-class PoductId(Attribute):
+class ProductId(Attribute):
     def __init__(self,attr_value):
         self._validation_pattern = "^[0-9]{13}$"
         self._error_message = "Invalid EAN13 code string"

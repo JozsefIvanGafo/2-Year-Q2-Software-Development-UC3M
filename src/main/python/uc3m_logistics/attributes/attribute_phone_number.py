@@ -1,5 +1,4 @@
 from .attribute import Attribute
-
 class PhoneNumber(Attribute):
     def __init__(self,attr_value):
         self._error_message = "phone number is not valid"
