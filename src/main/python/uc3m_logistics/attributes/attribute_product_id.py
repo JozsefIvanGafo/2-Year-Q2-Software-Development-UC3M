@@ -1,7 +1,9 @@
+""" File containing the class productId"""
 from .attribute import Attribute
 from ..order_management_exception import OrderManagementException
-import re
+#pylint: disable=too-few-public-methods
 class ProductId(Attribute):
+    """Class containg the validate function of the product id"""
     def __init__(self,attr_value):
         self._validation_pattern = "^[0-9]{13}$"
         self._error_message = "Invalid EAN13 code string"
@@ -14,7 +16,6 @@ class ProductId(Attribute):
         super()._validate(attr_value)
         checksum = 0
         code_read = -1
-        is_valid = False
 
         for position, digit in enumerate(reversed(attr_value)):
             try:

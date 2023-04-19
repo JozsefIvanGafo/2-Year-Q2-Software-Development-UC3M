@@ -2,8 +2,6 @@
 import hashlib
 import json
 from datetime import datetime
-from .order_management_exception import OrderManagementException
-import re
 from .attributes.attribute_product_id import ProductId
 from .attributes.attribute_phone_number import PhoneNumber
 from .attributes.attribute_address import Address
