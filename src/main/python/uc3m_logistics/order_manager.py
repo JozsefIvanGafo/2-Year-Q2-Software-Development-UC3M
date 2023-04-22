@@ -8,7 +8,9 @@ from .order_request import OrderRequest
 from .order_management_exception import OrderManagementException
 from .order_shipping import OrderShipping
 from .order_manager_config import JSON_FILES_PATH
-from .json_store_read import JsonStoreRead
+from .storage.orders_json_store import OrdersJSONStore
+from .storage.shipping_json_store import ShipmentsJSONStore
+from .storage.json_store import JSONStore
 
 class OrderManager:
     """Class for providing the methods for managing the orders process"""
@@ -54,26 +56,11 @@ class OrderManager:
             raise OrderManagementException("tracking_code format is not valid")
 
     @staticmethod
-    def save_order(order):
-        """Medthod for saving the orders store"""
-        orders_store = JSON_FILES_PATH + "orders_store.json"
-        # first read the file
-        order_list = JsonStoreRead.read_json(orders_store)
-        found = False
-        for item in order_list:
-            if item["_OrderRequest__order_id"] == order.order_id:
-                found = True
-        if found is False:
-            order_list.append(order.__dict__)
-        else:
-            raise OrderManagementException("order_id is already registered in orders_store")
-
-        JsonStoreRead.dump_json(order_list, orders_store)
-        return True
-
-
-
-
+    def save_orders_shipped(shipment):
+        """Saves the shipping object into a file"""
+        shipment_json_store = ShipmentsJSONStore()
+        shipment_json_store.add(shipment)
+    # pylint: disable=too-many-arguments
 
     #pylint: disable=too-many-arguments
     def register_order( self, product_id,
@@ -89,71 +76,58 @@ class OrderManager:
                                     address,
                                     phone_number,
                                     zip_code)
-        JsonStoreRead.save_order(my_order)
+        """JsonStoreRead.save_order(my_order)"""
+
+        orders_json_store = OrdersJSONStore()
+        orders_json_store.add(my_order)
+
 
         return my_order.order_id
 
 
 
+
+    def validate_label(self,data):
+        if "OrderID" in data.keys() and "ContactEmail" in data.keys():
+            return True
+        else:
+            raise OrderManagementException("Bad label")
+
     #pylint: disable=too-many-locals
     def send_product ( self, input_file ):
         """Sends the order included in the input_file"""
-        data=JsonStoreRead.read_send_product(input_file)
+        try:
+            with open(input_file, "r", encoding="utf-8", newline="") as file:
+                data = json.load(file)
+        except FileNotFoundError as my_error:
+            # file is not found
+            raise OrderManagementException("File is not found") from my_error
+        except json.JSONDecodeError as my_error:
+            raise OrderManagementException("JSON Decode Error - Wrong JSON Format") from my_error
 
+        self.validate_label(data)
         #check all the information
-        try:
-            myregex = re.compile(r"[0-9a-fA-F]{32}$")
-            match = myregex.fullmatch(data["OrderID"])
-            if not match:
-                raise OrderManagementException("order id is not valid")
-        except KeyError as my_error:
-            raise  OrderManagementException("Bad label") from my_error
+        myregex = re.compile(r"[0-9a-fA-F]{32}$")
+        match = myregex.fullmatch(data["OrderID"])
+        if not match:
+            raise OrderManagementException("order id is not valid")
 
-        try:
-            regex_email = r'^[a-z0-9]+([\._]?[a-z0-9]+)+[@](\w+[.])+\w{2,3}$'
-            myregex = re.compile(regex_email)
-            match = myregex.fullmatch(data["ContactEmail"])
-            if not match:
-                raise OrderManagementException("contact email is not valid")
-        except KeyError as my_error:
-            raise OrderManagementException("Bad label") from my_error
+        regex_email = r'^[a-z0-9]+([\._]?[a-z0-9]+)+[@](\w+[.])+\w{2,3}$'
+        myregex = re.compile(regex_email)
+        match = myregex.fullmatch(data["ContactEmail"])
+        if not match:
+            raise OrderManagementException("contact email is not valid")
 
-        file_store = JSON_FILES_PATH + "orders_store.json"
-        order_list=JsonStoreRead.read_json(file_store)
+        order = OrderRequest.get_order_by_order_id(data["OrderID"])
 
 
-        found = False
-        for item in order_list:
-            if item["_OrderRequest__order_id"] == data["OrderID"]:
-                found = True
-                #retrieve the orders data
-                product_id = item["_OrderRequest__product_id"]
-                address = item["_OrderRequest__delivery_address"]
-                reg_type = item["_OrderRequest__order_type"]
-                phone = item["_OrderRequest__phone_number"]
-                order_timestamp = item["_OrderRequest__time_stamp"]
-                zip_code = item["_OrderRequest__zip_code"]
-                #set the time when the order was registered for checking the md5
-                with freeze_time(datetime.fromtimestamp(order_timestamp).date()):
-                    order = OrderRequest(product_id=product_id,
-                                         delivery_address=address,
-                                         order_type=reg_type,
-                                         phone_number=phone,
-                                         zip_code=zip_code)
-
-                if order.order_id != data["OrderID"]:
-                    raise OrderManagementException("Orders' data have been manipulated")
-
-        if not found:
-            raise OrderManagementException("order_id not found")
-
-        my_sign= OrderShipping(product_id=product_id,
+        my_sign= OrderShipping(product_id=order.product_id,
                                order_id=data["OrderID"],
-                               order_type=reg_type,
+                               order_type=order.order_type,
                                delivery_email=data["ContactEmail"])
 
         #save the OrderShipping in shipments_store.json
-        JsonStoreRead.save_orders_shipped(my_sign)
+        self.save_orders_shipped(my_sign)
 
         #self.save_orders_shipped(my_sign)
 
@@ -166,7 +140,13 @@ class OrderManager:
         #check if this tracking_code is in shipments_store
         shimpents_store_file = JSON_FILES_PATH + "shipments_store.json"
         # first read the file
-        data_list=JsonStoreRead.read_shipments(shimpents_store_file)
+        try:
+            with open(shimpents_store_file, "r", encoding="utf-8", newline="") as file:
+                data_list = json.load(file)
+        except json.JSONDecodeError as my_error:
+            raise OrderManagementException("JSON Decode Error - Wrong JSON Format") from my_error
+        except FileNotFoundError as my_error:
+            raise OrderManagementException("shipments_store not found") from my_error
 
         #search this tracking_code
         found = False
@@ -185,11 +165,23 @@ class OrderManager:
 
 
         shipments_file = JSON_FILES_PATH + "shipments_delivered.json"
-        data_list=JsonStoreRead.read_json(shipments_file)
+        try:
+            with open(shipments_file, "r", encoding="utf-8", newline="") as file:
+                data_list = json.load(file)
+        except FileNotFoundError:
+            # file is not found , so     init my data_list
+            data_list = []
+        except json.JSONDecodeError as my_error:
+            raise OrderManagementException("JSON Decode Error - Wrong JSON Format") from my_error
+        return data_list
 
             # append the delivery info
         data_list.append(str(tracking_code))
         data_list.append(str(datetime.utcnow()))
 
-        JsonStoreRead.dump_json(data_list, shipments_file)
+        try:
+            with open(path, "w", encoding="utf-8", newline="") as file:
+                json.dump(data_list, file, indent=2)
+        except FileNotFoundError as my_error:
+            raise OrderManagementException("Wrong file or file path") from my_error
         return True

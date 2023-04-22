@@ -12,9 +12,7 @@ class ZipCode(Attribute):
         """Function that inherits the function validate
         from attributes and checks if the zip code is valñid or not"""
         super()._validate(attr_value)
-        if attr_value.isnumeric() and len(attr_value) == 5:
-            if (int(attr_value) > 52999 or int(attr_value) < 1000):
-                raise OrderManagementException("zip_code is not valid")
-        else:
-            raise OrderManagementException("zip_code format is not valid")
+        if (int(attr_value) > 52999 or int(attr_value) < 1000):
+            raise OrderManagementException("zip_code is not valid")
+
         return attr_value

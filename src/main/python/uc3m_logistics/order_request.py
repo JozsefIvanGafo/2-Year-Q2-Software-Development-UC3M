@@ -2,11 +2,15 @@
 import hashlib
 import json
 from datetime import datetime
+from freezegun import freeze_time
 from .attributes.attribute_product_id import ProductId
 from .attributes.attribute_phone_number import PhoneNumber
 from .attributes.attribute_address import Address
 from .attributes.attribute_order_type import OrderType
 from .attributes.attribute_zip_code import ZipCode
+from .order_management_exception import OrderManagementException
+from .order_manager_config import JSON_FILES_PATH
+from .storage.orders_json_store import OrdersJSONStore
 
 class OrderRequest:
     """Class representing the register of the order in the system"""
@@ -77,3 +81,33 @@ class OrderRequest:
     @zip_code.setter
     def zip_code(self, value):
         self.__product_id = ZipCode(value).value
+
+
+    @classmethod
+    def get_order_by_order_id(cls,order_id):
+        orders_json_store = OrdersJSONStore()
+        item = orders_json_store.find("_OrderRequest__order_id", order_id)
+
+        file_store = JSON_FILES_PATH + "orders_store.json"
+        if item:
+            # retrieve the orders data
+            product_id = item["_OrderRequest__product_id"]
+            address = item["_OrderRequest__delivery_address"]
+            reg_type = item["_OrderRequest__order_type"]
+            phone = item["_OrderRequest__phone_number"]
+            order_timestamp = item["_OrderRequest__time_stamp"]
+            zip_code = item["_OrderRequest__zip_code"]
+            # set the time when the order was registered for checking the md5
+            with freeze_time(datetime.fromtimestamp(order_timestamp).date()):
+                order = OrderRequest(product_id=product_id,
+                                     delivery_address=address,
+                                     order_type=reg_type,
+                                     phone_number=phone,
+                                     zip_code=zip_code)
+
+                if order.order_id != order_id:
+                    raise OrderManagementException("Orders' data have been manipulated")
+                return order
+
+        else:
+            raise OrderManagementException("order_id not found")
