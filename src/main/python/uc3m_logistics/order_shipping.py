@@ -2,6 +2,9 @@
 from datetime import datetime
 import hashlib
 from .attributes.attribute_product_id import ProductId
+from .attributes.attribute_order_id import OrderID
+from .attributes.attribute_contact_email import ContactEmail
+
 
 #pylint: disable=too-many-instance-attributes
 class OrderShipping():
@@ -11,8 +14,8 @@ class OrderShipping():
         self.__alg = "SHA-256"
         self.__type = "DS"
         self.__product_id = ProductId(product_id).value
-        self.__order_id = order_id
-        self.__delivery_email = delivery_email
+        self.__order_id = OrderID(order_id).value
+        self.__delivery_email = ContactEmail(delivery_email).value
         justnow = datetime.utcnow()
         self.__issued_at = datetime.timestamp(justnow)
         if order_type == "Regular":

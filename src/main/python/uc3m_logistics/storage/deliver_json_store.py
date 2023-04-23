@@ -1,0 +1,19 @@
+"""File containing the class DeliverJSONStore"""
+from datetime import datetime
+from uc3m_logistics.order_manager_config import JSON_FILES_PATH
+from .json_store import JSONStore
+
+#pylint: disable=too-few-public-methods
+class DeliverJSONStore(JSONStore):
+    """ Class that contains function for the json file shipments_delivered"""
+    def __init__(self):
+        super().__init__()
+        self._json_file_name = JSON_FILES_PATH + "shipments_delivered.json"
+
+    def add(self,item):
+        """Method that loads, then generate a dictionary and the save it on the json file"""
+        self.load()
+        # append the delivery info
+        self._data_list.append(str(item))
+        self._data_list.append(str(datetime.utcnow()))
+        self.save()

@@ -9,7 +9,6 @@ from .attributes.attribute_address import Address
 from .attributes.attribute_order_type import OrderType
 from .attributes.attribute_zip_code import ZipCode
 from .order_management_exception import OrderManagementException
-from .order_manager_config import JSON_FILES_PATH
 from .storage.orders_json_store import OrdersJSONStore
 
 class OrderRequest:
@@ -85,10 +84,10 @@ class OrderRequest:
 
     @classmethod
     def get_order_by_order_id(cls,order_id):
+        """Method that checks if the order id is valid"""
         orders_json_store = OrdersJSONStore()
         item = orders_json_store.find("_OrderRequest__order_id", order_id)
 
-        file_store = JSON_FILES_PATH + "orders_store.json"
         if item:
             # retrieve the orders data
             product_id = item["_OrderRequest__product_id"]
@@ -108,6 +107,5 @@ class OrderRequest:
                 if order.order_id != order_id:
                     raise OrderManagementException("Orders' data have been manipulated")
                 return order
-
         else:
-            raise OrderManagementException("order_id not found")
+            raise OrderManagementException("order id is not valid")
