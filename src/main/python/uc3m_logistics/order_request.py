@@ -81,7 +81,10 @@ class OrderRequest:
     def zip_code(self, value):
         self.__product_id = ZipCode(value).value
 
-
+    def save(self):
+        orders_json_store = OrdersJSONStore()
+        # orders_json_store.add(my_order)
+        orders_json_store.add(self)
     @classmethod
     def get_order_by_order_id(cls,order_id):
         """Method that checks if the order id is valid"""
@@ -98,7 +101,7 @@ class OrderRequest:
             zip_code = item["_OrderRequest__zip_code"]
             # set the time when the order was registered for checking the md5
             with freeze_time(datetime.fromtimestamp(order_timestamp).date()):
-                order = OrderRequest(product_id=product_id,
+                order = cls(product_id=product_id,
                                      delivery_address=address,
                                      order_type=reg_type,
                                      phone_number=phone,

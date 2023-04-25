@@ -35,6 +35,10 @@ class ShipmentsJSONStore(JSONStore):
         except json.JSONDecodeError as my_error:
             raise OrderManagementException("JSON Decode Error - Wrong JSON Format") from my_error
 
+        if "OrderID" in self._data_list.keys() and "ContactEmail" in self._data_list.keys():
+            return True
+        raise OrderManagementException("Bad label")
+
     def load_shipment(self):
         """
         Method that loads what is inside the shipments_store
