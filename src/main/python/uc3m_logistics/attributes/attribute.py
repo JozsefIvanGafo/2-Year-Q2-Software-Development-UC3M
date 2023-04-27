@@ -17,7 +17,6 @@ class Attribute():
             raise OrderManagementException(self._error_message)
         return value
 
-
     @property
     def value(self):
         """It returns the value self._attr_value"""

@@ -11,11 +11,11 @@ class SendInput(JSONStore):
     def __init__(self,input_file):
         super().__init__()
         #input_file = JSON_FILES_PATH + "shipments_store.json"
-        self.get_data_from_input_file(input_file)
+        self._get_data_from_input_file(input_file)
         self._order_id = OrderID(self.__send_data["OrderID"]).value
         self._contact_email = ContactEmail(self.__send_data["ContactEmail"]).value
 
-    def get_data_from_input_file(self, input_file):
+    def _get_data_from_input_file(self, input_file):
         """Method that opens an input file and then validate it"""
         try:
             with open(input_file, "r", encoding="utf-8", newline="") as file:

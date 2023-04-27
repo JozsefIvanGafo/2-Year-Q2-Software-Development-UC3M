@@ -8,9 +8,9 @@ class OrderDelivered():
     """Class containing the methods and attributes for the orders delivered"""
     def __init__(self,tracking_code):
         self._tracking_code = TrackingCode(tracking_code).value
-        self._delivery_day = self.validate_delivery_day()
+        self._delivery_day = self._validate_delivery_day()
 
-    def validate_delivery_day(self):
+    def _validate_delivery_day(self):
         """Method to validate a delivery day"""
         shipments_store = ShipmentsJSONStore()
         shipment = shipments_store.find("_OrderShipping__tracking_code",self._tracking_code)
