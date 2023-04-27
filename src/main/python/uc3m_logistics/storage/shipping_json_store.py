@@ -1,12 +1,12 @@
 """File containing the class ShipmentsJSONStore"""
-import json
 from uc3m_logistics.order_manager_config import JSON_FILES_PATH
-from uc3m_logistics.order_management_exception import OrderManagementException
 from .json_store import JSONStore
 
 
 class ShipmentsJSONStore(JSONStore):
     """ Class that contains function for the json file shipments_store"""
+
+    # pylint: disable=invalid-name
     class __ShipmentsJSONStore(JSONStore):
         def __init__(self):
             super().__init__()

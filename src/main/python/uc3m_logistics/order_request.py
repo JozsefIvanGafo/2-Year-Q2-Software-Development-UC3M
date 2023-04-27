@@ -82,6 +82,7 @@ class OrderRequest:
         self.__product_id = ZipCode(value).value
 
     def save(self):
+        """This method does the add operation of the json files"""
         orders_json_store = OrdersJSONStore()
         # orders_json_store.add(my_order)
         orders_json_store.add(self)

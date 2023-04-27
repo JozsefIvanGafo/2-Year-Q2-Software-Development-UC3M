@@ -83,10 +83,11 @@ class OrderShipping():
 
     @classmethod
     def get_order_shipping(cls,input_file):
+        """Method that returns object OrderShipping"""
         send_input_file = SendInput(input_file)
-        order = OrderRequest.get_order_by_order_id(send_input_file._order_id)
+        order = OrderRequest.get_order_by_order_id(send_input_file.order_id)
         my_order_shipping = OrderShipping(product_id=order.product_id,
                                     order_id=order.order_id,
                                     order_type=order.order_type,
-                                    delivery_email=send_input_file._contact_email)
+                                    delivery_email=send_input_file.contact_email)
         return my_order_shipping

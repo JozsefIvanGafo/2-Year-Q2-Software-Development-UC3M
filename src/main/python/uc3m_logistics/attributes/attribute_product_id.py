@@ -17,7 +17,6 @@ class ProductId(Attribute):
         super()._validate(value)
         checksum = 0
         code_read = -1
-
         for position, digit in enumerate(reversed(value)):
             try:
                 current_digit = int(digit)

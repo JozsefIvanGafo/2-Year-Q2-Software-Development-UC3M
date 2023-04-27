@@ -44,4 +44,3 @@ class TestSingleton(TestCase):
         self.assertEqual(dj1,dj2)
         self.assertEqual(dj2,dj3)
         self.assertEqual(dj1,dj3)
-

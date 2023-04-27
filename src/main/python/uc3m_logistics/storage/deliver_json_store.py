@@ -6,6 +6,8 @@ from .json_store import JSONStore
 #pylint: disable=too-few-public-methods
 class DeliverJSONStore(JSONStore):
     """ Class that contains function for the json file shipments_delivered"""
+
+    # pylint: disable=invalid-name
     class __DeliverJSONStore(JSONStore):
         def __init__(self):
             super().__init__()
