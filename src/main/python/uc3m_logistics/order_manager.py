@@ -8,6 +8,8 @@ from .storage.orders_json_store import OrdersJSONStore
 from .storage.shipping_json_store import ShipmentsJSONStore
 from .storage.deliver_json_store import DeliverJSONStore
 from .attributes.attribute_tracking_code import TrackingCode
+from .send_input_file import SendInput
+from .order_delivered import OrderDelivered
 
 class OrderManager:
     """Class for providing the methods for managing the orders process"""
@@ -42,7 +44,7 @@ class OrderManager:
         #pylint: disable=too-many-locals
         def send_product ( self, input_file ):
             """Sends the order included in the input_file"""
-            #We create the objects ShipmentsJSONStore
+            """#We create the objects ShipmentsJSONStore
             shipping_json_store=ShipmentsJSONStore()
 
             #We validate if the input_file is valid
@@ -63,14 +65,19 @@ class OrderManager:
                                     delivery_email=data["ContactEmail"])
 
             #We load and save the new information on shipments_store.json
+            shipping_json_store.add(my_sign)"""
+            my_sign = OrderShipping.get_order_shipping(input_file)
+            shipping_json_store = ShipmentsJSONStore()
             shipping_json_store.add(my_sign)
+
+
 
             #We return the tracking code "generated" from my_sign
             return my_sign.tracking_code
 
         def deliver_product( self, tracking_code ):
             """Register the delivery of the product"""
-            # first define the JSONStore class for delivery and shipment
+            """# first define the JSONStore class for delivery and shipment
             shipping_json_store=ShipmentsJSONStore()
             deliver_json_store=DeliverJSONStore()
 
@@ -92,6 +99,10 @@ class OrderManager:
             deliver_json_store.add(tracking_code)
 
             #If everything is fine and is the delivery date we return True
+            return True"""
+            order_delivered = OrderDelivered(tracking_code)
+            orders_delivered_store = DeliverJSONStore()
+            orders_delivered_store.add(order_delivered)
             return True
 
     instance = None

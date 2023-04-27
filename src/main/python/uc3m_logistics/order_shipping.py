@@ -4,6 +4,8 @@ import hashlib
 from .attributes.attribute_product_id import ProductId
 from .attributes.attribute_order_id import OrderID
 from .attributes.attribute_contact_email import ContactEmail
+from .order_request import OrderRequest
+from .send_input_file import SendInput
 
 
 #pylint: disable=too-many-instance-attributes
@@ -78,3 +80,13 @@ class OrderShipping():
     def delivery_day( self ):
         """Returns the delivery day for the order"""
         return self.__delivery_day
+
+    @classmethod
+    def get_order_shipping(cls,input_file):
+        send_input_file = SendInput(input_file)
+        order = OrderRequest.get_order_by_order_id(send_input_file._order_id)
+        my_order_shipping = OrderShipping(product_id=order.product_id,
+                                    order_id=order.order_id,
+                                    order_type=order.order_type,
+                                    delivery_email=send_input_file._contact_email)
+        return my_order_shipping
