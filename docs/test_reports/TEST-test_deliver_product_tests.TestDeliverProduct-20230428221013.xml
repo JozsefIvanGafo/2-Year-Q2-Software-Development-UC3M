@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="test_deliver_product_tests.TestDeliverProduct-20230428221013" tests="6" file="test_deliver_product_tests.py" time="0.173" timestamp="2023-04-28T22:10:13" failures="0" errors="0" skipped="1">
+	<testcase classname="test_deliver_product_tests.TestDeliverProduct" name="test_deliver_product_bad_date_signature" time="0.106" timestamp="2023-04-28T22:10:13"/>
+	<testcase classname="test_deliver_product_tests.TestDeliverProduct" name="test_deliver_product_no_date" time="0.015" timestamp="2023-04-28T22:10:13"/>
+	<testcase classname="test_deliver_product_tests.TestDeliverProduct" name="test_deliver_product_ok" time="0.022" timestamp="2023-04-28T22:10:13"/>
+	<testcase classname="test_deliver_product_tests.TestDeliverProduct" name="test_deliver_product_shipments_store_is_empty" time="0.014" timestamp="2023-04-28T22:10:13"/>
+	<testcase classname="test_deliver_product_tests.TestDeliverProduct" name="test_tracking_code_not_found_date_signature" time="0.014" timestamp="2023-04-28T22:10:13"/>
+	<testcase classname="test_deliver_product_tests.TestDeliverProduct" name="test_deliver_product_no_shipments_store" time="0.001" timestamp="2023-04-28T22:10:13">
+		<skipped type="skip" message="We skip the test because after the refactoring we are not considering this case"/>
+	</testcase>
+</testsuite>

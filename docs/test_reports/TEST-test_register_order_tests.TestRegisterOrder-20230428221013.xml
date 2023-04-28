@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="test_register_order_tests.TestRegisterOrder-20230428221013" tests="3" file="test_register_order_tests.py" time="0.138" timestamp="2023-04-28T22:10:13" failures="0" errors="0" skipped="0">
+	<testcase classname="test_register_order_tests.TestRegisterOrder" name="test__duplicate_valid_order_id" time="0.009" timestamp="2023-04-28T22:10:13"/>
+	<testcase classname="test_register_order_tests.TestRegisterOrder" name="test_parametrized_not_valid_request_vaccination" time="0.097" timestamp="2023-04-28T22:10:13"/>
+	<testcase classname="test_register_order_tests.TestRegisterOrder" name="test_parametrized_valid_request_vaccination" time="0.032" timestamp="2023-04-28T22:10:13"/>
+</testsuite>
