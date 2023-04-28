@@ -9,7 +9,7 @@ from uc3m_logistics import OrderManager
 from uc3m_logistics import OrderManagementException
 from uc3m_logistics import JSON_FILES_PATH
 from uc3m_logistics import JSON_FILES_RF2_PATH
-
+# pylint: disable-all
 class TestDeliverProduct(TestCase):
     """Class for testing deliver_product"""
     @freeze_time("2023-03-08")

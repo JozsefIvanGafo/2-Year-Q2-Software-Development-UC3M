@@ -10,7 +10,7 @@ from uc3m_logistics import OrderManagementException
 from uc3m_logistics import JSON_FILES_PATH
 from uc3m_logistics import JSON_FILES_RF2_PATH
 
-
+# pylint: disable-all
 param_list_nok =[("node10_deleted.json","JSON Decode Error - Wrong JSON Format"),
                  ("node10_duplicated.json","JSON Decode Error - Wrong JSON Format"),
                  ("node11_deleted.json","JSON Decode Error - Wrong JSON Format"),
